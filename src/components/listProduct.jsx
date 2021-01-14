@@ -2,7 +2,7 @@ import React from 'react';
 
 import ProductItem from './productItem';
 
-const ListProduct = ({list, changeList, displayProduct}) => { 
+const ListProduct = ({list, changeList, displayProduct, listProductInStock}) => { 
 
     const changeListProducts = (change) => {
         changeList(change);
@@ -13,9 +13,19 @@ const ListProduct = ({list, changeList, displayProduct}) => {
 
     }
 
+    const handleChecked = (e) => {
+        listProductInStock(e.target.checked)
+    }
+
     return(
         <div className="border w-25 h-25 mb-2">
-            <h2>List Of Products</h2>
+            <div className="d-flex justify-content-between px-2 align-items-center">
+                <h2>List Of Products</h2>
+                <div className="form-check form-switch d-flex justify-content-between align-items-center">
+                    <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault"  onChange={(e) => handleChecked(e)}/>
+                    <label className="form-check-label">in Stock</label>
+                </div>
+            </div>
             <ul className="list-group">
                 { list.length ? (
                     <>
