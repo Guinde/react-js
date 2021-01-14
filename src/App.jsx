@@ -1,79 +1,68 @@
-// src/App.jsx
-import React, { Component } from "react";
+import React, { useState, useEffect } from 'react';
+
+import { products } from './data/products';
+
+import Basket from './components/basket';
+import ListProduct from './components/listProduct';
 import Card from "./components/card";
-import List from "./components/list";
-import NewChickForm from "./components/newChickForm";
 
-class App extends Component {
-  state = {
-    chicken: [
-      {
-        race: "Harco",
-        type: "pondeuse",
-        imgUrl: "https://source.unsplash.com/random/150x150",
-      },
-      {
-        race: "Cou nu",
-        type: "chair",
-        imgUrl: "https://source.unsplash.com/random/150x150",
-      },
-      {
-        race: "Standard",
-        type: "chair",
-        imgUrl: "https://source.unsplash.com/random/150x150",
-      },
-    ],
-    current: 0,
-  };
+const App = () => { 
 
-  render() {
-    let componentsToRender = <h2>No elements to render</h2>;
+  const [index, setIndex] = useState([0, 5]);
+  const [list, setList] = useState([]);
+  const [mountTotal, setmountTotal] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState({});
+  const [nbItems, setNbItems] = useState(0);
+  const [listItems, setlistItems] = useState([]);
 
-    if (this.state.chicken.length) {
-      componentsToRender = (
-        <React.Fragment>
-          <List
-            current={this.state.current}
-            chicken={this.state.chicken}
-            handleDelete={this.handleDeleteListItem}
-          />
-          <hr />
-          <Card
-            current={this.state.current}
-            chick={this.state.chicken[this.state.current]}
-            onChickChange={this.handleChickChange}
-          />
-        </React.Fragment>
-      );
-    }
-    return (
-      <React.Fragment>
-        <NewChickForm onNewChick={this.handleNewChick} />
-        <hr />
-        {componentsToRender}
-      </React.Fragment>
-    );
+  useEffect(() => {
+    const listItem = products.slice(index[0], index[1]);
+    setList([...listItem]);
+  }, [index])
+
+  const onChangeListProduct = (change) => {
+    if(change === "next" && index[1] < 100) {
+      setIndex([index[0] + 1, index[1] + 1])
+    } else if (change === "prev" && index[0] > 0 ) {
+      setIndex([index[0] - 1, index[1] - 1])
+    } else
+      return;
+    const listItem = products.slice(index[0], index[1]);
+    setList([...listItem]);
   }
 
-  handleNewChick = (chick) => {
-    this.setState({ chicken: [...this.state.chicken, chick] });
-  };
+  const onChangeProduct = (product) => {
+    setSelectedProduct({...product})
+  }
 
-  handleDeleteListItem = (index) => {
-    const chicken = this.state.chicken.filter((chick, key) => {
-      return key !== index;
-    });
+  const addNbItems = (product) => {
+    const isInList = listItems.includes(product.productId);
+    if(!isInList) {
+      let count = nbItems; 
+      count += 1;
+      setNbItems(count);
+      setlistItems([...listItems, product.productId])
+    }
+  }
 
-    this.setState({ chicken: chicken });
-  };
+  const onChangeMountTotal = (product) => {
+    addNbItems(product);
+    const p = Math.round(product.productPrice * 100) / 100
+    //const p = parseFloat(product.productPrice).toFixed(2);
+    //console.log("price", p)
+    setmountTotal(mountTotal + parseFloat(p));
+  }
 
-  handleChickChange = () => {
-    const current =
-      this.state.current === this.state.chicken.length - 1
-        ? 0
-        : this.state.current + 1;
-    this.setState({ current: current });
-  };
+  return(
+    <div className="bg-light px-2" style={{minHeight: "92vh"}}>
+      <Basket mount={mountTotal} nbItems={nbItems}/>
+      <ListProduct list={list} 
+                   changeList={onChangeListProduct} 
+                   displayProduct={onChangeProduct}/>
+      <Card product={selectedProduct} 
+            changeMount={onChangeMountTotal} />
+    </div>
+  )
 }
 
 export default App;

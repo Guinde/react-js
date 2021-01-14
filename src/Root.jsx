@@ -1,8 +1,15 @@
 import React, { Component } from "react";
+import Navbar from "../src/components/navbar";
+import App from '../src/App';
 
 class Root extends Component {
   render() {
-    return <h3>Hello Root</h3>;
+    return (
+      <div>
+        <Navbar />
+        <App />
+      </div>
+    );
   }
 }
 
