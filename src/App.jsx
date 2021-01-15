@@ -55,8 +55,8 @@ const App = () => {
 
   const onChangeMountTotal = (product) => {
     addNbItems(product);
-    const p = parseFloat(product.productPrice).toFixed(2);
-    setmountTotal(mountTotal + parseFloat(p));
+    const mount = Math.round((mountTotal + product.productPrice) * 100) / 100;
+    setmountTotal(mount);
   }
 
   const listProductInStock = (checkbox) => {
